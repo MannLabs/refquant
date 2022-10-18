@@ -1,1 +1,5 @@
 click==8.0.1
+numpy
+pandas
+dask
+scikit-learn
