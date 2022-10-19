@@ -70,7 +70,6 @@ class TableReformatterSpectronaut(TableReformatter):
         self.spectronaut_table_reformatted.to_csv(self.outfile_name, sep="\t", index=False)
 
 
-import table_utils
 class TableReformatterDIANN(TableReformatter):
     def __init__(self, input_file : str, quantitative_extraction_types : list = ["diann_fragion_isotopes_mDIA_raw", "diann_precursors_mDIA"]):
         self._input_file = input_file
