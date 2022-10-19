@@ -168,7 +168,7 @@ class ReferenceChannelNormalizer():
         for precursor in self._run2singlelabelledPrecursors[run]:
             precursor.search_engine_derived_reference_quantity_normed = precursor.search_engine_derived_reference_quantity + shift
 
-import refquant_classes
+import refquant.refquant_classes as refquant_classes
 class ReferenceChannelQuantityDeriver():
     def __init__(self, reference_intensity_dataframe : pd.DataFrame, list_of_single_labelled_precursors : list([refquant_classes.SingleLabelledPrecursor])):
         self._reference_intensity_dataframe = reference_intensity_dataframe

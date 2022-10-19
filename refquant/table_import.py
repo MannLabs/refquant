@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import re
-import table_utils
+import refquant.table_utils as table_utils
 from abc import ABC, abstractmethod
 
 class TableReformatter(ABC):

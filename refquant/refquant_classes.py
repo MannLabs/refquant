@@ -5,8 +5,8 @@
 import re
 from timeit import repeat
 import numpy as np
-import geometric_ratio
-import refquant_utils as utils
+import refquant.geometric_ratio as geometric_ratio
+import refquant.refquant_utils as utils
 
 class SingleLabelledPrecursor():
     def __init__(self):
