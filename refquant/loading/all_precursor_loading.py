@@ -21,7 +21,7 @@ def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
         number_of_cores = int(multiprocessing.cpu_count()/2)
     print(f"{number_of_cores} cores of {multiprocessing.cpu_count()} used")
 
-    with multiprocessing.Pool(int(multiprocessing.cpu_count()/2)) as pool:
+    with multiprocessing.Pool(number_of_cores) as pool:
         single_labelled_precursors = pool.starmap(get_single_labelled_precursors_diann, args)
     #join list of lists
     single_labelled_precursors = [item for sublist in single_labelled_precursors for item in sublist]
