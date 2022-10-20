@@ -12,13 +12,13 @@ class PrecursorQuantityTableCreator():
 
         self.precursorquantitytable = None
 
-        self._add_static_cross_table_quantities()
+        self._add_static_cross_table_quantities_to_single_labelled_precursors()
         self._define_precursor2protein()
         self._define_run_and_channel_to_precursors()
         self._reformat_run_and_channel_precursors_to_precursor_indexed_series()
         self._define_precursor2quantitytable()
 
-    def _add_static_cross_table_quantities(self):
+    def _add_static_cross_table_quantities_to_single_labelled_precursors(self):
         StaticReferenceChannelQuantityAdder(self._list_of_single_labelled_precursors)
 
         
@@ -45,7 +45,7 @@ class PrecursorQuantityTableCreator():
             self._list_of_precursors_series.append(series_quantities)
 
     def _get_quantitative_values(self, list_of_precursors):
-        return [precursor.comparison_derived_quantity for precursor in list_of_precursors]
+        return [precursor.derived_reference_quantity_static + precursor.ratio_to_reference for precursor in list_of_precursors]
 
     def _define_precursor2quantitytable(self):
         self.precursorquantitytable = pd.concat(self._list_of_precursors_series, axis = 1)
@@ -85,7 +85,7 @@ class StaticReferenceChannelQuantityAdder():
                 StaticReferenceChannelQuantityAdderForSelectedQuantity(unassigned_precursors, quantity)
 
     def _get_unassigned_precursors(self, single_labelled_precursors):
-        precursors_w_no_static_quantity = [precursor for precursor in single_labelled_precursors if np.isnan(precursor.search_engine_derived_reference_quantity_static)]
+        precursors_w_no_static_quantity = [precursor for precursor in single_labelled_precursors if np.isnan(precursor.derived_reference_quantity_static)]
         return precursors_w_no_static_quantity
 
     def _filter_for_precursors_w_quantity_values(self, unassigned_precursors, quantity):
@@ -184,17 +184,15 @@ class ReferenceChannelQuantityDeriver():
         
     def _annotate_static_reference_quantity(self, singlelabelledprecursor):
         if singlelabelledprecursor.name in self._precursorname2staticquantity.keys():
-            singlelabelledprecursor.search_engine_derived_reference_quantity_static = self._precursorname2staticquantity[singlelabelledprecursor.name]
-        else:
-            print("Warning: no static quantity found for precursor {}".format(singlelabelledprecursor.name))
+            singlelabelledprecursor.derived_reference_quantity_static = self._precursorname2staticquantity[singlelabelledprecursor.name]
 
 
     def _annotate_target_quantity_based_on_comparison_to_static(self, singlelabelledprecursor):
-        if singlelabelledprecursor.ratio_to_reference is not None and hasattr(singlelabelledprecursor, "search_engine_derived_reference_quantity_static"):
+        if singlelabelledprecursor.ratio_to_reference is not None and hasattr(singlelabelledprecursor, "derived_reference_quantity_static"):
             singlelabelledprecursor.comparison_derived_quantity_static = self._calculate_comparison_derived_quantity_static(singlelabelledprecursor)
         
     def _calculate_comparison_derived_quantity_static(self, precursor):
-        return precursor.search_engine_derived_reference_quantity_static + precursor.ratio_to_reference
+        return precursor.derived_reference_quantity_static + precursor.ratio_to_reference
 
     def _define_precursorname2staticquantity(self):
         self._reference_intensity_dataframe["median"] = self._reference_intensity_dataframe.median(axis = 1)

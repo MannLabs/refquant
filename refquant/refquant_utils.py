@@ -15,8 +15,7 @@ def get_runs(reference_table):
 
 import pandas as pd
 import os
-import abc
-class DIANNQvalueAdder(abc.ABC):
+class DIANNQvalueAdder():
     channel2name = {"(Dimethyl-n-0)": "reference", "(Dimethyl-n-4)": "target4", "(Dimethyl-n-8)": "target8"}
     def __init__(self, diann_input_table):
         self._diann_input_table = diann_input_table
@@ -90,8 +89,6 @@ class DIANNQvalueAdder(abc.ABC):
         for tag in all_mtraq_tags:
             ion = ion.replace(tag, "")
         return ion
-
-
 
 class DIANNQvalueAdderRef8(DIANNQvalueAdder):
     channel2name = {"(Dimethyl-n-0)": "target0", "(Dimethyl-n-4)": "target4", "(Dimethyl-n-8)": "reference"}

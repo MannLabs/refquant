@@ -35,7 +35,7 @@ class SingleLabelledPrecursor():
 
         self.search_engine_derived_reference_quantity = np.nan
         self.search_engine_derived_reference_quantity_normed = np.nan
-        self.search_engine_derived_reference_quantity_static = np.nan
+        self.derived_reference_quantity_static = np.nan
 
 
 class PrecursorWithAllLabels():
@@ -51,7 +51,7 @@ class PrecursorWithMatchedLabels():
 
     def annotate_precursors(self):
         for target_precursor in self.list_of_target_precursors:
-            TargetPrecursorAnnotator25Quantile(self.reference_precursor, target_precursor)
+            TargetPrecursorAnnotator(self.reference_precursor, target_precursor)
 
 
 class TargetPrecursorAnnotator():
@@ -68,7 +68,15 @@ class TargetPrecursorAnnotator():
         self._define_intensities_of_target_and_reference()
         self._define_ratios_to_reference()
 
-        self._annotate_precursor()    
+        self._annotate_number_of_ratios_used_to_precursor()
+        self._annotate_intensity_based_reference_ratio()
+        self._annotate_search_engine_derived_reference_quantity()
+        self._annotate_ms1_reference_quantity()
+        self._annotate_summed_top5_reference_quantity()
+
+        self._annotate_comparison_derived_quantity_to_precursor()
+        self._annotate_ms1_ratio()
+        self._annotate_derived_ratio()
         
     def _define_intersecting_fragment_ions(self):
         self._list_of_intersection_ions = list(set(self.reference_precursor.fragion2quantity.keys()).intersection(set(self.target_precursor.fragion2quantity.keys())))
@@ -82,24 +90,50 @@ class TargetPrecursorAnnotator():
     def _define_ratios_to_reference(self):
         self._ratios_to_reference = self._intensities_target - self._intensities_reference #the intensities need be be log2 transformed
 
-    def _annotate_precursor(self):
-        self._annotate_number_of_ratios_used_to_precursor()
-        self._annotate_intensity_based_reference_ratio()
-        if self.target_precursor.number_of_ratios_used>0:
-            self._annotate_derived_ratio()
-            self._annotate_comparison_derived_quantity_to_precursor()
-            self._annotate_ratio_of_most_abundant_fragion_to_reference()
-            self._annotate_cosine_similarity()
-            self._annotate_number_of_fragment_ions_available()
+
 
     def _annotate_number_of_ratios_used_to_precursor(self):
         self.target_precursor.number_of_ratios_used = len(self._list_of_intersection_ions)
     
     def _annotate_derived_ratio(self):
+        if self.target_precursor.number_of_ratios_used == 0:
+            self.target_precursor.derived_ratio = np.nan
+            return
         self.target_precursor.median_ratio_to_reference = np.median(self._ratios_to_reference)
         sorted_ratios = np.sort(self._ratios_to_reference)
-        self.target_precursor.min_ratio_to_reference = sorted_ratios[0]
-        self.target_precursor.ratio_to_reference = self.target_precursor.min_ratio_to_reference
+        idx_quantile_min = self._get_index_of_quantile(0.1)
+        idx_quantile = self._get_index_of_quantile(0.25)
+        self.target_precursor.min_ratio_to_reference = sorted_ratios[idx_quantile_min]
+        self.target_precursor.ratio_to_reference = sorted_ratios[idx_quantile]
+
+
+    def _get_index_of_quantile(self,quantile):
+        return int(quantile * len(self._ratios_to_reference))
+
+    def _annotate_ms1_ratio(self):
+        is_ms1 = ["MS1" in x for x in self._list_of_intersection_ions]
+        if sum(is_ms1)==1:
+            ms1_ratio = self._ratios_to_reference[is_ms1][0]
+        elif sum(is_ms1) == 0:
+            ms1_ratio = np.nan
+        else:
+            raise ValueError("More than one MS1 ion in intersection")
+
+        self.target_precursor.ms1_ratio_to_reference = ms1_ratio
+    
+    def _annotate_search_engine_derived_reference_quantity(self):
+        self.target_precursor.search_engine_derived_quantity_reference = self.reference_precursor.search_engine_derived_quantity
+
+    def _annotate_ms1_reference_quantity(self):
+        is_ms1 = ["MS1" in x for x in self._list_of_intersection_ions]
+        if sum(is_ms1)==1:
+            self.target_precursor.ms1_quantity_reference = self._intensities_reference[is_ms1][0]
+        else:
+            self.target_precursor.ms1_quantity_reference = np.nan
+
+    def _annotate_summed_top5_reference_quantity(self):
+        sorted_intensities_descending = np.sort(self._intensities_reference)[::-1]
+        self.target_precursor.summed_quantity_reference = np.log2(np.sum(2**sorted_intensities_descending[:5]))
 
     def _annotate_intensity_based_reference_ratio(self):
         if self.target_precursor.search_engine_derived_quantity is not None and self.reference_precursor.search_engine_derived_quantity is not None:
@@ -126,38 +160,6 @@ class TargetPrecursorAnnotator():
         if len(self._list_of_intersection_ions)>2:
             calculator = geometric_ratio.GeometricRatioCalculator(self._list_of_intersection_ions, self.target_precursor.fragion2quantity, self.reference_precursor.fragion2quantity)
             self.target_precursor.geometric_ratio = calculator.ratio_to_reference
-
-class TargetPrecursorAnnotator25Quantile(TargetPrecursorAnnotator):
-    def __init__(self,reference_precursor, target_precursor):
-        self.reference_precursor = reference_precursor
-        self.target_precursor = target_precursor
-
-        self._intensities_target = None
-        self._intensities_reference = None
-        self._list_of_intersection_ions = None
-        self._ratios_to_reference = None
-
-        self._define_intersecting_fragment_ions()
-        self._define_intensities_of_target_and_reference()
-        self._define_ratios_to_reference()
-
-        self._annotate_number_of_ratios_used_to_precursor()
-        self._annotate_intensity_based_reference_ratio()
-
-        if self.target_precursor.number_of_ratios_used>0:
-            self._annotate_derived_ratio()
-            self._annotate_comparison_derived_quantity_to_precursor()
-            self._annotate_number_of_fragment_ions_available()
-
-    def _annotate_derived_ratio(self):
-        self.target_precursor.median_ratio_to_reference = np.median(self._ratios_to_reference)
-        sorted_ratios = np.sort(self._ratios_to_reference)
-        idx_quantile = self._get_index_of_quantile(0.25)
-        self.target_precursor.min_ratio_to_reference = sorted_ratios[idx_quantile]
-        self.target_precursor.ratio_to_reference = sorted_ratios[idx_quantile]
-    
-    def _get_index_of_quantile(self,quantile):
-        return int(quantile * len(self._ratios_to_reference))
 
 
 
@@ -212,11 +214,14 @@ class PrecursorLoader():
     def _define_merged_precusor_and_fragion_df(self):
         self._merged_precusor_and_fragion_df = pd.read_csv(self._formatted_input_file, sep="\t")
         self._subset_merged_precusor_and_fragion_df_to_replicate()
+        self._adapt_formatting_of_dataframe()
+        #self._merged_precusor_and_fragion_df = self._merged_precusor_and_fragion_df.set_index("precursor")
+    
+    def _adapt_formatting_of_dataframe(self):
         self._merged_precusor_and_fragion_df["run"] = self._merged_precusor_and_fragion_df["run"].astype(str)
         self._merged_precusor_and_fragion_df =  self._merged_precusor_and_fragion_df.replace(0, np.nan)
         numeric_cols = self._merged_precusor_and_fragion_df.select_dtypes(include=[np.number]).columns
         self._merged_precusor_and_fragion_df[numeric_cols] = np.log2(self._merged_precusor_and_fragion_df[numeric_cols])
-        #self._merged_precusor_and_fragion_df = self._merged_precusor_and_fragion_df.set_index("precursor")
     
     def _subset_merged_precusor_and_fragion_df_to_replicate(self):
         #subset datframe to rows containing the replicate name
@@ -247,6 +252,19 @@ class PrecursorLoader():
     
     def _clear_precursor2df(self):
         self._precursor2df = None
+
+class PrecursorLoaderFromDf(PrecursorLoader):
+    def __init__(self, merged_precusor_and_fragion_df):
+
+        self._merged_precusor_and_fragion_df = merged_precusor_and_fragion_df
+        self._precursor2df = {}
+
+        self.precursors_w_all_labels = []
+
+        self._define_merged_precusor_and_fragion_df()
+        self._define_precursor2df()
+        self._go_through_precursors_and_initialize_precursors_w_all_labels()
+
     
 
 class PrecursorLoaderDIANN(PrecursorLoader):
@@ -282,6 +300,25 @@ class PrecursorLoaderDIANNRef8(PrecursorLoader):
 
     def _get_list_of_single_labelled_precursors(self, precursor, precursor_df):
         return PrecursorsFromDataframeInititalizerReference8(precursor, precursor_df).single_labelled_precursors
+
+
+
+class PrecursorLoaderDIANNFromDf(PrecursorLoaderDIANN):
+    def __init__(self, merged_precusor_and_fragion_df, diann_qvalue_adder):
+
+        self._merged_precusor_and_fragion_df = merged_precusor_and_fragion_df
+        self._diann_qvalue_adder = diann_qvalue_adder
+
+        self._precursor2df = {}
+        
+        self.precursors_w_all_labels = []
+        self._adapt_formatting_of_dataframe()
+        self._define_precursor2df()
+        self._go_through_precursors_and_initialize_precursors_w_all_labels()
+        self._add_diann_qvalues()
+    
+    def _add_diann_qvalues(self):
+        self._update_singlelabelledprecursors_w_diann_qvalues(self._diann_qvalue_adder)
     
 
 
