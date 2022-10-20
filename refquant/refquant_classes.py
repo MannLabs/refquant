@@ -51,7 +51,7 @@ class PrecursorWithMatchedLabels():
 
     def annotate_precursors(self):
         for target_precursor in self.list_of_target_precursors:
-            TargetPrecursorAnnotator(self.reference_precursor, target_precursor)
+            TargetPrecursorAnnotator25Quantile(self.reference_precursor, target_precursor)
 
 
 class TargetPrecursorAnnotator():
@@ -127,7 +127,7 @@ class TargetPrecursorAnnotator():
             calculator = geometric_ratio.GeometricRatioCalculator(self._list_of_intersection_ions, self.target_precursor.fragion2quantity, self.reference_precursor.fragion2quantity)
             self.target_precursor.geometric_ratio = calculator.ratio_to_reference
 
-class TargetPrecursorAnnotatorSpectronaut(TargetPrecursorAnnotator):
+class TargetPrecursorAnnotator25Quantile(TargetPrecursorAnnotator):
     def __init__(self,reference_precursor, target_precursor):
         self.reference_precursor = reference_precursor
         self.target_precursor = target_precursor
@@ -147,7 +147,6 @@ class TargetPrecursorAnnotatorSpectronaut(TargetPrecursorAnnotator):
         if self.target_precursor.number_of_ratios_used>0:
             self._annotate_derived_ratio()
             self._annotate_comparison_derived_quantity_to_precursor()
-            self._annotate_cosine_similarity()
             self._annotate_number_of_fragment_ions_available()
 
     def _annotate_derived_ratio(self):
