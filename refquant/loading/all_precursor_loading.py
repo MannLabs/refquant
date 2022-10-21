@@ -15,17 +15,23 @@ def get_all_single_labelled_precursors_in_dataset_diann(reference_table, diann_f
 
 
 def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
-    multiprocessing.freeze_support()
     args = [(x, run2df, diann_qvaladder)   for x in run2df.keys()]
-    if number_of_cores is None:
-        number_of_cores = int(multiprocessing.cpu_count()/2)
-    print(f"{number_of_cores} cores of {multiprocessing.cpu_count()} used")
-    
-    with multiprocessing.Pool(number_of_cores) as pool:
-        single_labelled_precursors = pool.starmap(get_single_labelled_precursors_diann, args)
+    pool = get_configured_multiprocessing_pool(number_of_cores)
+    single_labelled_precursors = pool.starmap(get_single_labelled_precursors_diann, args)
+    pool.close()
     #join list of lists
     single_labelled_precursors = [item for sublist in single_labelled_precursors for item in sublist]
     return single_labelled_precursors
+
+
+def get_configured_multiprocessing_pool(num_cores):
+    multiprocessing.freeze_support()
+    if num_cores is None:
+        num_cores = int(multiprocessing.cpu_count()/2) if int(multiprocessing.cpu_count()/2) < 61 else 61 #windows upper thread limit
+    pool = multiprocessing.Pool(num_cores)
+    print(f"using {pool._processes} processes")
+    return pool
+
 
 def run_linear_processing_diann(run2df, diann_qvaladder):
     single_labelled_precursors = []
