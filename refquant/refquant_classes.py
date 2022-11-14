@@ -75,7 +75,7 @@ class TargetPrecursorAnnotator():
         self._annotate_summed_top5_reference_quantity()
 
         self._annotate_comparison_derived_quantity_to_precursor()
-        self._annotate_ms1_ratio()
+        self._annotate_ms1_ratio_and_intensity()
         self._annotate_derived_ratio()
         
     def _define_intersecting_fragment_ions(self):
@@ -110,16 +110,19 @@ class TargetPrecursorAnnotator():
     def _get_index_of_quantile(self,quantile):
         return int(quantile * len(self._ratios_to_reference))
 
-    def _annotate_ms1_ratio(self):
+    def _annotate_ms1_ratio_and_intensity(self):
         is_ms1 = ["MS1" in x for x in self._list_of_intersection_ions]
         if sum(is_ms1)==1:
             ms1_ratio = self._ratios_to_reference[is_ms1][0]
+            ms1_intensity = self._intensities_target[is_ms1][0]
         elif sum(is_ms1) == 0:
             ms1_ratio = np.nan
+            ms1_intensity = np.nan
         else:
             raise ValueError("More than one MS1 ion in intersection")
 
         self.target_precursor.ms1_ratio_to_reference = ms1_ratio
+        self.target_precursor.ms1_intensity = ms1_intensity
     
     def _annotate_search_engine_derived_reference_quantity(self):
         self.target_precursor.search_engine_derived_quantity_reference = self.reference_precursor.search_engine_derived_quantity
@@ -384,7 +387,7 @@ class SingleLabelledPrecursorIntitializer():
         index_of_precursor = np.where(ion_vals == self._precursor_name)[0]
         if len(index_of_precursor) == 0:
             self.single_labelled_precursor.search_engine_derived_quantity_not_provided = True
-            return self._estimate_quantity_from_available_ions()
+            return np.nan# self._estimate_quantity_from_available_ions()
         return quant_vals[index_of_precursor[0]]
 
         

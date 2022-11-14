@@ -21,8 +21,6 @@ class PrecursorQuantityTableCreator():
     def _add_static_cross_table_quantities_to_single_labelled_precursors(self):
         StaticReferenceChannelQuantityAdder(self._list_of_single_labelled_precursors)
 
-        
-    
     def _define_precursor2protein(self):
         for precursor in self._list_of_single_labelled_precursors:
             self._precursor2protein[precursor.name] = precursor.protein_name
@@ -33,8 +31,6 @@ class PrecursorQuantityTableCreator():
             if replicate_and_channel not in self._replicate_and_channel_to_precursors:
                 self._replicate_and_channel_to_precursors[replicate_and_channel] = []
             self._replicate_and_channel_to_precursors[replicate_and_channel].append(precursor)
-
-
     
     def _reformat_run_and_channel_precursors_to_precursor_indexed_series(self):
         for replicate_and_channel, list_of_precursors in self._replicate_and_channel_to_precursors.items():
@@ -66,6 +62,22 @@ class PrecursorQuantityTableCreator():
 class PrecursorTableCreatorQuantityBySearchEngine(PrecursorQuantityTableCreator):
     def _get_quantitative_values(self, list_of_precursors):
         return [precursor.search_engine_derived_quantity for precursor in list_of_precursors]
+
+
+class PrecursorTableCreatorQuantityByMS1(PrecursorQuantityTableCreator):
+    def _get_quantitative_values(self, list_of_precursors):
+        return [precursor.ms1_intensity for precursor in list_of_precursors]
+
+class PrecursorTableCreatorMS1RatioToReference(PrecursorQuantityTableCreator):
+    def _get_quantitative_values(self, list_of_precursors):
+        return [precursor.derived_reference_quantity_static + precursor.ms1_ratio_to_reference for precursor in list_of_precursors]
+
+class PrecursorTableCreatorNoStaticReference(PrecursorQuantityTableCreator):
+    def _get_quantitative_values(self, list_of_precursors):
+        return [precursor.search_engine_derived_quantity_reference + precursor.ratio_to_reference for precursor in list_of_precursors]
+
+
+
 
 class StaticReferenceChannelQuantityAdder():
     def __init__(self, list_of_single_labelled_precursors):
@@ -120,7 +132,9 @@ class StaticReferenceChannelQuantityAdderForSelectedQuantity():
             list_of_precursors = [x for x in list_of_precursors if np.isfinite(getattr(x, self._selected_quantity))]
             series_values = [getattr(precursor, self._selected_quantity) for precursor in list_of_precursors]
             series_index = [precursor.name for precursor in list_of_precursors]
-            series_quantities = pd.Series(series_values, index = series_index).drop_duplicates()
+            series_quantities = pd.Series(series_values, index = series_index, dtype='float')
+            duplicate_indices = series_quantities.index[series_quantities.index.duplicated()]
+            series_quantities = series_quantities.drop(duplicate_indices)
             series_quantities.name = run
             if len(series_quantities.index)>0:
                 self._list_of_annotated_series.append(series_quantities)

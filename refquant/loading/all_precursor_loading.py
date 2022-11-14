@@ -27,7 +27,7 @@ def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
 def get_configured_multiprocessing_pool(num_cores):
     multiprocessing.freeze_support()
     if num_cores is None:
-        num_cores = int(multiprocessing.cpu_count()/2) if int(multiprocessing.cpu_count()/2) < 61 else 61 #windows upper thread limit
+        num_cores = int(multiprocessing.cpu_count()) if int(multiprocessing.cpu_count()/2) < 61 else 61 #windows upper thread limit
     pool = multiprocessing.Pool(num_cores)
     print(f"using {pool._processes} processes")
     return pool
