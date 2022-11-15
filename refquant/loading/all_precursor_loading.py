@@ -15,7 +15,6 @@ def get_all_single_labelled_precursors_in_dataset_diann(reference_table, use_mul
 def run_multiprocessing_diann(run2df, number_of_cores = None):
     args = [(x, run2df)   for x in run2df.keys()]
     pool = get_configured_multiprocessing_pool(number_of_cores)
-    pool = multiprocessing.Pool(number_of_cores)
     single_labelled_precursors = pool.starmap( get_single_labelled_precursors_diann, args)
     pool.close()
     #join list of lists
