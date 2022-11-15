@@ -271,35 +271,13 @@ class PrecursorLoaderFromDf(PrecursorLoader):
     
 
 class PrecursorLoaderDIANN(PrecursorLoader):
-    def __init__(self, formatted_input_file, replicate_name, diann_input_file):
+    def __init__(self, formatted_input_file, replicate_name):
         super().__init__(formatted_input_file, replicate_name)
-        self._diann_input_file = diann_input_file
-        self._add_diann_qvalues()
-
-    def _add_diann_qvalues(self):
-        qvalue_adder = utils.DIANNQvalueAdder(self._diann_input_file)
-        self._update_singlelabelledprecursors_w_diann_qvalues(qvalue_adder)
-    
-    def _update_singlelabelledprecursors_w_diann_qvalues(self, qvalue_adder):
-        for precursor in self.precursors_w_all_labels:
-            for single_labelled_precursor in precursor.list_of_single_labelled_precursors:
-                qvalue_adder.add_qvalue_infos(single_labelled_precursor)
-
+   
 
 class PrecursorLoaderDIANNRef8(PrecursorLoader):
-    def __init__(self, formatted_input_file, replicate_name, diann_input_file):
+    def __init__(self, formatted_input_file, replicate_name):
         super().__init__(formatted_input_file, replicate_name)
-        self._diann_input_file = diann_input_file
-        self._add_diann_qvalues()
-
-    def _add_diann_qvalues(self):
-        qvalue_adder = utils.DIANNQvalueAdderRef8(self._diann_input_file)
-        self._update_singlelabelledprecursors_w_diann_qvalues(qvalue_adder)
-    
-    def _update_singlelabelledprecursors_w_diann_qvalues(self, qvalue_adder):
-        for precursor in self.precursors_w_all_labels:
-            for single_labelled_precursor in precursor.list_of_single_labelled_precursors:
-                qvalue_adder.add_qvalue_infos(single_labelled_precursor)
 
     def _get_list_of_single_labelled_precursors(self, precursor, precursor_df):
         return PrecursorsFromDataframeInititalizerReference8(precursor, precursor_df).single_labelled_precursors
@@ -307,10 +285,9 @@ class PrecursorLoaderDIANNRef8(PrecursorLoader):
 
 
 class PrecursorLoaderDIANNFromDf(PrecursorLoaderDIANN):
-    def __init__(self, merged_precusor_and_fragion_df, diann_qvalue_adder):
+    def __init__(self, merged_precusor_and_fragion_df):
 
         self._merged_precusor_and_fragion_df = merged_precusor_and_fragion_df
-        self._diann_qvalue_adder = diann_qvalue_adder
 
         self._precursor2df = {}
         
@@ -318,10 +295,6 @@ class PrecursorLoaderDIANNFromDf(PrecursorLoaderDIANN):
         self._adapt_formatting_of_dataframe()
         self._define_precursor2df()
         self._go_through_precursors_and_initialize_precursors_w_all_labels()
-        self._add_diann_qvalues()
-    
-    def _add_diann_qvalues(self):
-        self._update_singlelabelledprecursors_w_diann_qvalues(self._diann_qvalue_adder)
     
 
 

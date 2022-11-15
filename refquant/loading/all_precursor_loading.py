@@ -3,18 +3,17 @@ import refquant.refquant_classes as refquant_classes
 import refquant.refquant_utils as utils
 import pandas as pd
 
-def get_all_single_labelled_precursors_in_dataset_diann(reference_table, diann_file, use_multiprocessing=False, number_of_cores = None):
-    diann_qvaladder = utils.DIANNQvalueAdder(diann_file)
+def get_all_single_labelled_precursors_in_dataset_diann(reference_table, use_multiprocessing=False, number_of_cores = None):
     run2df = get_run2df_dict(reference_table)
     print(f"processing {len(run2df.keys())} runs")
     if use_multiprocessing:
-        return run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores)
+        return run_multiprocessing_diann(run2df, number_of_cores)
     else:
-        return run_linear_processing_diann(run2df, diann_qvaladder)
+        return run_linear_processing_diann(run2df)
 
 
-def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
-    args = [(x, run2df, diann_qvaladder)   for x in run2df.keys()]
+def run_multiprocessing_diann(run2df, number_of_cores = None):
+    args = [(x, run2df)   for x in run2df.keys()]
     pool = get_configured_multiprocessing_pool(number_of_cores)
     pool = multiprocessing.Pool(number_of_cores)
     single_labelled_precursors = pool.starmap( get_single_labelled_precursors_diann, args)
@@ -33,10 +32,10 @@ def get_configured_multiprocessing_pool(num_cores):
     return pool
 
 
-def run_linear_processing_diann(run2df, diann_qvaladder):
+def run_linear_processing_diann(run2df):
     single_labelled_precursors = []
     for run in run2df.keys():
-        single_labelled_precursors.extend(get_single_labelled_precursors_diann(run, run2df, diann_qvaladder))
+        single_labelled_precursors.extend(get_single_labelled_precursors_diann(run, run2df))
     return single_labelled_precursors
 
 def get_run2df_dict(reference_table):
@@ -48,11 +47,11 @@ def get_run2df_dict(reference_table):
     reference_df = None
     return run2df_dict
 
-def get_single_labelled_precursors_diann(run, run2df, diann_qvaladder):
+def get_single_labelled_precursors_diann(run, run2df):
     print("run: ", run)
     single_labelled_precursors = []
     reference_df = run2df[run]
-    precursor_loader = refquant_classes.PrecursorLoaderDIANNFromDf(reference_df, diann_qvaladder)
+    precursor_loader = refquant_classes.PrecursorLoaderDIANNFromDf(reference_df)
     label_combiner = refquant_classes.PrecursorCombinerToSingleReference(precursor_loader)
     for matched_prec in label_combiner.list_of_precursors_with_matched_labels:
         for target_precursor in matched_prec.list_of_target_precursors:
