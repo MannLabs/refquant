@@ -1,8 +1,8 @@
 if __name__ == "__main__":
     try:
         import refquant.gui
-        import multiprocessing
-        multiprocessing.freeze_support()
+        import multiprocess
+        multiprocess.freeze_support()
         refquant.gui.run()
     except e:
         import traceback

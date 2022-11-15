@@ -446,15 +446,15 @@ class PrecursorCombinerPairWiseToReference(PrecursorCombiner):
         return precursor_with_matched_labels
 
 
-import multiprocessing
+import multiprocess
 def get_all_single_labelled_precursors_in_dataset(reference_table, use_multiprocessing=False):
     single_labelled_precursors = []
     runs = utils.get_runs(reference_table)
     print(f"processing {len(runs)} runs: {runs}")
     if use_multiprocessing:
-        multiprocessing.freeze_support()
+        multiprocess.freeze_support()
         args = [(x, reference_table)   for x in runs]
-        with multiprocessing.Pool(int(multiprocessing.cpu_count()/2)) as pool:
+        with multiprocess.Pool(int(multiprocess.cpu_count()/2)) as pool:
             single_labelled_precursors = pool.starmap(get_single_labelled_precursors, args)
         #join list of lists
         single_labelled_precursors = [item for sublist in single_labelled_precursors for item in sublist]

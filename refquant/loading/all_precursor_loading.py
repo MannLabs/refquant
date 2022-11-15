@@ -1,5 +1,5 @@
 
-import multiprocessing
+import multiprocess
 import refquant.refquant_classes as refquant_classes
 import refquant.refquant_utils as utils
 import pandas as pd
@@ -25,10 +25,10 @@ def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
 
 
 def get_configured_multiprocessing_pool(num_cores):
-    multiprocessing.freeze_support()
+    multiprocess.freeze_support()
     if num_cores is None:
-        num_cores = int(multiprocessing.cpu_count()) if int(multiprocessing.cpu_count()/2) < 61 else 61 #windows upper thread limit
-    pool = multiprocessing.Pool(num_cores)
+        num_cores = int(multiprocess.cpu_count()) if int(multiprocess.cpu_count()/2) < 60 else 60 #windows upper thread limit
+    pool = multiprocess.Pool(num_cores)
     print(f"using {pool._processes} processes")
     return pool
 
