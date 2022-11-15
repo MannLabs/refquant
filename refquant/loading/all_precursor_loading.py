@@ -1,5 +1,4 @@
-
-import multiprocess
+import multiprocessing
 import refquant.refquant_classes as refquant_classes
 import refquant.refquant_utils as utils
 import pandas as pd
@@ -17,7 +16,8 @@ def get_all_single_labelled_precursors_in_dataset_diann(reference_table, diann_f
 def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
     args = [(x, run2df, diann_qvaladder)   for x in run2df.keys()]
     pool = get_configured_multiprocessing_pool(number_of_cores)
-    single_labelled_precursors = pool.starmap(get_single_labelled_precursors_diann, args)
+    pool = multiprocessing.Pool(number_of_cores)
+    single_labelled_precursors = pool.starmap( get_single_labelled_precursors_diann, args)
     pool.close()
     #join list of lists
     single_labelled_precursors = [item for sublist in single_labelled_precursors for item in sublist]
@@ -25,10 +25,10 @@ def run_multiprocessing_diann(run2df, diann_qvaladder, number_of_cores = None):
 
 
 def get_configured_multiprocessing_pool(num_cores):
-    multiprocess.freeze_support()
+    multiprocessing.freeze_support()
     if num_cores is None:
-        num_cores = int(multiprocess.cpu_count()) if int(multiprocess.cpu_count()/2) < 60 else 60 #windows upper thread limit
-    pool = multiprocess.Pool(num_cores)
+        num_cores = int(multiprocessing.cpu_count()) if int(multiprocessing.cpu_count()/2) < 60 else 60 #windows upper thread limit
+    pool = multiprocessing.Pool(num_cores)
     print(f"using {pool._processes} processes")
     return pool
 

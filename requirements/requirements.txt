@@ -4,3 +4,4 @@ pandas
 dask
 matplotlib
 scipy
+multiprocess
