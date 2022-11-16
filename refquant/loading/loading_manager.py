@@ -1,7 +1,9 @@
 import multiprocessing
-import refquant.refquant_classes as refquant_classes
-import refquant.refquant_utils as utils
 import pandas as pd
+
+from . import precursor_combiner
+from . import precursor_loader
+
 
 def get_all_single_labelled_precursors_in_dataset_diann(reference_table, use_multiprocessing=False, number_of_cores = None):
     run2df = get_run2df_dict(reference_table)
@@ -50,8 +52,8 @@ def get_single_labelled_precursors_diann(run, run2df):
     print("run: ", run)
     single_labelled_precursors = []
     reference_df = run2df[run]
-    precursor_loader = refquant_classes.PrecursorLoaderDIANNFromDf(reference_df)
-    label_combiner = refquant_classes.PrecursorCombinerToSingleReference(precursor_loader)
+    precursor_loader_initialized = precursor_loader.PrecursorLoaderDIANNFromDf(reference_df)
+    label_combiner = precursor_combiner.PrecursorCombinerToSingleReference(precursor_loader_initialized)
     for matched_prec in label_combiner.list_of_precursors_with_matched_labels:
         for target_precursor in matched_prec.list_of_target_precursors:
             single_labelled_precursors.append(target_precursor)
@@ -62,8 +64,8 @@ def get_single_labelled_precursors_spectronaut(run, run2df):
     print("run: ", run)
     single_labelled_precursors = []
     reference_df = run2df[run]
-    precursor_loader = refquant_classes.PrecursorLoaderFromDf(reference_df)
-    label_combiner = refquant_classes.PrecursorCombinerToSingleReference(precursor_loader)
+    precursor_loader_initialized = precursor_loader.PrecursorLoaderFromDf(reference_df)
+    label_combiner = precursor_combiner.PrecursorCombinerToSingleReference(precursor_loader_initialized)
     for matched_prec in label_combiner.list_of_precursors_with_matched_labels:
         for target_precursor in matched_prec.list_of_target_precursors:
             single_labelled_precursors.append(target_precursor)

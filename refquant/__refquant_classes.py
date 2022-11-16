@@ -1,12 +1,5 @@
-# %% [markdown]
-# ## Define labelled precursor objects
-
-# %%
-import re
-from timeit import repeat
 import numpy as np
-import refquant.geometric_ratio as geometric_ratio
-import refquant.refquant_utils as utils
+
 
 class SingleLabelledPrecursor():
     def __init__(self):
@@ -24,7 +17,6 @@ class SingleLabelledPrecursor():
         self.min_ratio_to_reference = np.nan
         self.ratio_to_reference_intensity_based = np.nan
         self.ratio_of_most_abundant_fragion_to_reference = np.nan
-        self.geometric_ratio = np.nan
         self.search_engine_derived_quantity = np.nan
 
         self.number_of_ratios_used = np.nan
@@ -102,7 +94,7 @@ class TargetPrecursorAnnotator():
         self.target_precursor.median_ratio_to_reference = np.median(self._ratios_to_reference)
         sorted_ratios = np.sort(self._ratios_to_reference)
         idx_quantile_min = self._get_index_of_quantile(0.1)
-        idx_quantile = self._get_index_of_quantile(0.25)
+        idx_quantile = self._get_index_of_quantile(0.1)
         self.target_precursor.min_ratio_to_reference = sorted_ratios[idx_quantile_min]
         self.target_precursor.ratio_to_reference = sorted_ratios[idx_quantile]
 
@@ -158,11 +150,6 @@ class TargetPrecursorAnnotator():
 
     def _annotate_number_of_fragment_ions_available(self):
         self.target_precursor.number_of_fragment_ions_used = len(set(filter(lambda x : "FRGION" in x, self._list_of_intersection_ions)))
-
-    def _annotate_geometric_ratio(self):
-        if len(self._list_of_intersection_ions)>2:
-            calculator = geometric_ratio.GeometricRatioCalculator(self._list_of_intersection_ions, self.target_precursor.fragion2quantity, self.reference_precursor.fragion2quantity)
-            self.target_precursor.geometric_ratio = calculator.ratio_to_reference
 
 
 
@@ -419,32 +406,6 @@ class PrecursorCombinerPairWiseToReference(PrecursorCombiner):
         return precursor_with_matched_labels
 
 
-import multiprocess
-def get_all_single_labelled_precursors_in_dataset(reference_table, use_multiprocessing=False):
-    single_labelled_precursors = []
-    runs = utils.get_runs(reference_table)
-    print(f"processing {len(runs)} runs: {runs}")
-    if use_multiprocessing:
-        multiprocess.freeze_support()
-        args = [(x, reference_table)   for x in runs]
-        with multiprocess.Pool(int(multiprocess.cpu_count()/2)) as pool:
-            single_labelled_precursors = pool.starmap(get_single_labelled_precursors, args)
-        #join list of lists
-        single_labelled_precursors = [item for sublist in single_labelled_precursors for item in sublist]
-    else:
-        for run in runs:
-            single_labelled_precursors.extend(get_single_labelled_precursors(run, reference_table))
-    return single_labelled_precursors
-
-def get_single_labelled_precursors(run, reference_table):
-    print("run: ", run)
-    single_labelled_precursors = []
-    precursor_loader = PrecursorLoader(reference_table, run)
-    label_combiner = PrecursorCombinerToSingleReference(precursor_loader)
-    for matched_prec in label_combiner.list_of_precursors_with_matched_labels:
-        for target_precursor in matched_prec.list_of_target_precursors:
-            single_labelled_precursors.append(target_precursor)
-    return single_labelled_precursors
 
 
 class ChannelBiasCompensator():

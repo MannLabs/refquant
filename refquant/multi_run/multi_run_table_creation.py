@@ -1,6 +1,7 @@
-import re
 import pandas as pd
-import os
+
+from ..precursor_handling import precursor_objects
+
 
 class PrecursorQuantityTableCreator():
     def __init__(self, list_of_single_labelled_precursors):
@@ -76,9 +77,6 @@ class PrecursorTableCreatorNoStaticReference(PrecursorQuantityTableCreator):
     def _get_quantitative_values(self, list_of_precursors):
         return [precursor.search_engine_derived_quantity_reference + precursor.ratio_to_reference for precursor in list_of_precursors]
 
-
-
-
 class StaticReferenceChannelQuantityAdder():
     def __init__(self, list_of_single_labelled_precursors):
 
@@ -130,11 +128,10 @@ class StaticReferenceChannelQuantityAdderForSelectedQuantity():
         for run, list_of_precursors in self._run2singlelabelledPrecursors.items():
             list_of_precursors = [x for x in list_of_precursors if hasattr(x, self._selected_quantity)]
             list_of_precursors = [x for x in list_of_precursors if np.isfinite(getattr(x, self._selected_quantity))]
-            series_values = [getattr(precursor, self._selected_quantity) for precursor in list_of_precursors]
-            series_index = [precursor.name for precursor in list_of_precursors]
-            series_quantities = pd.Series(series_values, index = series_index, dtype='float')
-            duplicate_indices = series_quantities.index[series_quantities.index.duplicated()]
-            series_quantities = series_quantities.drop(duplicate_indices)
+            values = [getattr(precursor, self._selected_quantity) for precursor in list_of_precursors]
+            index = [precursor.name for precursor in list_of_precursors]
+            df_quantities = pd.DataFrame({'index' : index, 'values' : values}).drop_duplicates(keep='first', subset='index')
+            series_quantities = pd.Series(df_quantities["values"].values, index = df_quantities["index"].values, dtype='float')
             series_quantities.name = run
             if len(series_quantities.index)>0:
                 self._list_of_annotated_series.append(series_quantities)
@@ -182,9 +179,10 @@ class ReferenceChannelNormalizer():
         for precursor in self._run2singlelabelledPrecursors[run]:
             precursor.search_engine_derived_reference_quantity_normed = precursor.search_engine_derived_reference_quantity + shift
 
-import refquant.refquant_classes as refquant_classes
+
+
 class ReferenceChannelQuantityDeriver():
-    def __init__(self, reference_intensity_dataframe : pd.DataFrame, list_of_single_labelled_precursors : list([refquant_classes.SingleLabelledPrecursor])):
+    def __init__(self, reference_intensity_dataframe : pd.DataFrame, list_of_single_labelled_precursors : list([precursor_objects.SingleLabelledPrecursor])):
         self._reference_intensity_dataframe = reference_intensity_dataframe
         self._list_of_single_labelled_precursors = list_of_single_labelled_precursors
 
@@ -211,4 +209,4 @@ class ReferenceChannelQuantityDeriver():
     def _define_precursorname2staticquantity(self):
         self._reference_intensity_dataframe["median"] = self._reference_intensity_dataframe.median(axis = 1)
         self._precursorname2staticquantity = dict(zip(self._reference_intensity_dataframe.index, self._reference_intensity_dataframe["median"]))
-    
+
