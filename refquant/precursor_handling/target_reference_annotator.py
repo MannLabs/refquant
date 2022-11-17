@@ -57,9 +57,9 @@ class TargetReferenceAnnotator():
         self.target_precursor.median_ratio_to_reference = np.median(self._ratios_to_reference)
         sorted_ratios = np.sort(self._ratios_to_reference)
         idx_quantile_min = self._get_index_of_quantile(0.1)
-        idx_quantile = self._get_index_of_quantile(0.1)
+        idx_quantile = self._get_index_of_quantile(0.4)
         self.target_precursor.min_ratio_to_reference = sorted_ratios[idx_quantile_min]
-        self.target_precursor.ratio_to_reference = sorted_ratios[idx_quantile]
+        self.target_precursor.ratio_to_reference = np.mean(sorted_ratios[:idx_quantile])
 
 
     def _get_index_of_quantile(self,quantile):

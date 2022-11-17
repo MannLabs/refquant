@@ -318,7 +318,7 @@ class AQTableReformatter(ABC):
             return True
         if "MS1ISOTOPES" in ion:
             return True
-        elif "K[DimethLys0]_" in ion: #if the end is labelled, all fragions are meaningful
+        elif "K_MOD" in ion: #if the end is labelled, all fragions are meaningful
             return True
         elif "FRGION_b" in ion:
             return True
