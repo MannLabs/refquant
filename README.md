@@ -23,8 +23,8 @@ An open-source Python package of the AlphaPept ecosystem from the [Mann Labs at 
 
 RefQuant is an algorithm for **Ref**erence-based **Quant**ification in multiplexed single cell/low input proteomics, applicable to proteomics data acquired with multiplexed data-independent acquisition (mDIA) using a reference channel, as described by [Thielert et al.](https://www.biorxiv.org/content/10.1101/2022.12.02.518917v1.article-info) and visualized in fig. 1 below. RefQuant currently takes [DIA-NN](https://github.com/vdemichev/DiaNN) processed mDIA files as input and generates an output table containing precursor intensities. For the analysis, RefQuant relies on a stable, higher-abundance reference channel that has been measured together with every single cell sample. The precursor quantities are derived by estimating the ratio to the reference channel based on the MS1 as well as the fragment information (see paper for details).
 
-<figure><img src="misc/mdia_single_cell_schema.png" width="90%"><figcaption><em>Figure1: mDIA single cell workflow. See manuscript for a detailed description.</em></figcaption></figure>
-<figure><img src="misc/refquant_schema.png" width="35%"><figcaption><em>Figure 2: Summary of the RefQuant principle. See manuscript for a detailed description.</em></figcaption></figure>
+<figure><img src="misc/figures/mdia_single_cell_schema.png" width="90%"><figcaption><em>Figure1: mDIA single cell workflow. See manuscript for a detailed description.</em></figcaption></figure>
+<figure><img src="misc/figures/refquant_schema.png" width="35%"><figcaption><em>Figure 2: Summary of the RefQuant principle. See manuscript for a detailed description.</em></figcaption></figure>
 
 ---
 ## License
@@ -85,6 +85,7 @@ In case of issues, check out the following:
 ## Citations
 
 Thielert, Marvin, et al. "Robust dimethyl-based multiplex-DIA workflow doubles single-cell proteome depth via a reference channel." bioRxiv (2022).
+([bioRxiv](https://www.biorxiv.org/content/10.1101/2022.12.02.518917v1.article-info))
 
 ---
 ## How to contribute
