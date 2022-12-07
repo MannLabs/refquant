@@ -13,10 +13,12 @@ def get_runs(reference_table):
 
 
 def write_shortened_diann_file_w_channel_lib_pg_cutoff(diann_file, qval_cutoff):
+    outfile_name = diann_file + f".filtered_lib_pg_ch_qval{qval_cutoff}.tsv"
     diann_df = pd.read_csv(diann_file, sep="\t")
     diann_df = diann_df[diann_df['Channel.Q.Value'] < qval_cutoff]
     diann_df = diann_df[diann_df['Lib.PG.Q.Value'] < 0.01]
-    diann_df.to_csv(diann_file + f".filtered_lib_pg_ch_qval{qval_cutoff}.tsv", sep="\t", index=False)
+    diann_df.to_csv(outfile_name, sep="\t", index=False)
+    return outfile_name
 
 
 def format_precursor_file_to_iq(precursor_file):
