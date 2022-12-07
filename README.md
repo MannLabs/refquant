@@ -1,32 +1,30 @@
-![Pip installation](https://github.com/MannLabs/refquant/workflows/Default%20installation%20and%20tests/badge.svg)
+<!-- ![Pip installation](https://github.com/MannLabs/refquant/workflows/Default%20installation%20and%20tests/badge.svg)
 ![GUI and PyPi releases](https://github.com/MannLabs/refquant/workflows/Publish%20on%20PyPi%20and%20release%20on%20GitHub/badge.svg)
 [![Downloads](https://pepy.tech/badge/refquant)](https://pepy.tech/project/refquant)
 [![Downloads](https://pepy.tech/badge/refquant/month)](https://pepy.tech/project/refquant)
-[![Downloads](https://pepy.tech/badge/refquant/week)](https://pepy.tech/project/refquant)
+[![Downloads](https://pepy.tech/badge/refquant/week)](https://pepy.tech/project/refquant) -->
 
 
 # RefQuant
 An open-source Python package of the AlphaPept ecosystem from the [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) and the [University of Copenhagen](https://www.cpr.ku.dk/research/proteomics/mann/). To enable all hyperlinks in this document, please view it at [GitHub](https://github.com/MannLabs/refquant).
 
-* [**About**](#about)
-* [**License**](#license)
-* [**Installation**](#installation)
-  * [**One-click GUI**](#one-click-gui)
-  * [**Pip installer**](#pip)
-  * [**Developer installer**](#developer)
-* [**Usage**](#usage)
-  * [**GUI**](#gui)
-  * [**CLI**](#cli)
-  * [**Python and jupyter notebooks**](#python-and-jupyter-notebooks)
-* [**Troubleshooting**](#troubleshooting)
-* [**Citations**](#citations)
-* [**How to contribute**](#how-to-contribute)
-* [**Changelog**](#changelog)
+- [RefQuant](#refquant)
+  - [About](#about)
+  - [License](#license)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Troubleshooting](#troubleshooting)
+  - [Citations](#citations)
+  - [How to contribute](#how-to-contribute)
+  - [Changelog](#changelog)
 
 ---
 ## About
 
-An open-source Python package of the AlphaPept ecosystem from the [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) and the [University of Copenhagen](https://www.cpr.ku.dk/research/proteomics/mann/).
+RefQuant is an algorithm for **Ref**erence-based **Quant**ification in multiplexed single cell/low input proteomics, applicable to proteomics data acquired with multiplexed data-independent acquisition (mDIA) using a reference channel, as described by [Thielert et al.](https://www.biorxiv.org/content/10.1101/2022.12.02.518917v1.article-info) and visualized in fig. 1 below. RefQuant currently takes [DIA-NN](https://github.com/vdemichev/DiaNN) processed mDIA files as input and generates an output table containing precursor intensities. For the analysis, RefQuant relies on a stable, higher-abundance reference channel that has been measured together with every single cell sample. The precursor quantities are derived by estimating the ratio to the reference channel based on the MS1 as well as the fragment information (see paper for details).
+
+<figure><img src="misc/mdia_single_cell_schema.png" width="50%"><figcaption><em>Figure1: mDIA single cell workflow. See manuscript for a detailed description.</em></figcaption></figure>
+<figure><img src="misc/refquant_schema.png" width="20%"><figcaption><em>Figure 2: Summary of the steps performed in scoring the proteins. See manuscript for a detailed description.</em></figcaption></figure>
 
 ---
 ## License
@@ -36,48 +34,7 @@ RefQuant was developed by the [Mann Labs at the Max Planck Institute of Biochemi
 ---
 ## Installation
 
-RefQuant can be installed and used on all major operating systems (Windows, macOS and Linux).
-There are three different types of installation possible:
-
-* [**One-click GUI installer:**](#one-click-gui) Choose this installation if you only want the GUI and/or keep things as simple as possible.
-* [**Pip installer:**](#pip) Choose this installation if you want to use RefQuant as a Python package in an existing Python 3.8 environment (e.g. a Jupyter notebook). If needed, the GUI and CLI can be installed with pip as well.
-* [**Developer installer:**](#developer) Choose this installation if you are familiar with CLI tools, [conda](https://docs.conda.io/en/latest/) and Python. This installation allows access to all available features of RefQuant and even allows to modify its source code directly. Generally, the developer version of RefQuant outperforms the precompiled versions which makes this the installation of choice for high-throughput experiments.
-
-### One-click GUI
-
-The GUI of RefQuant is a completely stand-alone tool that requires no knowledge of Python or CLI tools. Click on one of the links below to download the latest release for:
-
-* [**Windows**](https://github.com/MannLabs/refquant/releases/latest/download/refquant_gui_installer_windows.exe)
-* [**macOS**](https://github.com/MannLabs/refquant/releases/latest/download/refquant_gui_installer_macos.pkg)
-* [**Linux**](https://github.com/MannLabs/refquant/releases/latest/download/refquant_gui_installer_linux.deb)
-
-Older releases remain available on the [release page](https://github.com/MannLabs/refquant/releases), but no backwards compatibility is guaranteed.
-
-### Pip
-
-RefQuant can be installed in an existing Python 3.8 environment with a single `bash` command. *This `bash` command can also be run directly from within a Jupyter notebook by prepending it with a `!`*:
-
-```bash
-pip install refquant
-```
-
-Installing RefQuant like this avoids conflicts when integrating it in other tools, as this does not enforce strict versioning of dependancies. However, if new versions of dependancies are released, they are not guaranteed to be fully compatible with RefQuant. While this should only occur in rare cases where dependencies are not backwards compatible, you can always force RefQuant to use dependancy versions which are known to be compatible with:
-
-```bash
-pip install "refquant[stable]"
-```
-
-NOTE: You might need to run `pip install pip==21.0` before installing RefQuant like this. Also note the double quotes `"`.
-
-For those who are really adventurous, it is also possible to directly install any branch (e.g. `@development`) with any extras (e.g. `#egg=refquant[stable,development-stable]`) from GitHub with e.g.
-
-```bash
-pip install "git+https://github.com/MannLabs/refquant.git@development#egg=refquant[stable,development-stable]"
-```
-
-### Developer
-
-RefQuant can also be installed in editable (i.e. developer) mode with a few `bash` commands. This allows to fully customize the software and even modify the source code to your specific needs. When an editable Python package is installed, its source code is stored in a transparent location of your choice. While optional, it is advised to first (create and) navigate to e.g. a general software folder:
+RefQuant can be installed in editable (i.e. developer) mode with a few `bash` commands. This allows to fully customize the software and even modify the source code to your specific needs. When an editable Python package is installed, its source code is stored in a transparent location of your choice. While optional, it is advised to first (create and) navigate to e.g. a general software folder:
 
 ```bash
 mkdir ~/folder/where/to/install/software
@@ -112,36 +69,6 @@ By default this installs loose dependancies (no explicit versioning), although i
 ---
 ## Usage
 
-There are three ways to use RefQuant:
-
-* [**GUI**](#gui)
-* [**CLI**](#cli)
-* [**Python**](#python-and-jupyter-notebooks)
-
-NOTE: The first time you use a fresh installation of RefQuant, it is often quite slow because some functions might still need compilation on your local operating system and architecture. Subsequent use should be a lot faster.
-
-### GUI
-
-If the GUI was not installed through a one-click GUI installer, it can be activate with the following `bash` command:
-
-```bash
-refquant gui
-```
-
-Note that this needs to be prepended with a `!` when you want to run this from within a Jupyter notebook. When the command is run directly from the command-line, make sure you use the right environment (activate it with e.g. `conda activate refquant` or set an alias to the binary executable (can be obtained with `where refquant` or `which refquant`)).
-
-### CLI
-
-The CLI can be run with the following command (after activating the `conda` environment with `conda activate refquant` or if an alias was set to the RefQuant executable):
-
-```bash
-refquant -h
-```
-
-It is possible to get help about each function and their (required) parameters by using the `-h` flag.
-
-### Python and Jupyter notebooks
-
 RefQuant can be imported as a Python package into any Python script or notebook with the command `import refquant`.
 
 A brief [Jupyter notebook tutorial](nbs/tutorial.ipynb) on how to use the API is also present in the [nbs folder](nbs).
@@ -157,7 +84,7 @@ In case of issues, check out the following:
 ---
 ## Citations
 
-There are currently no plans to draft a manuscript.
+Thielert, Marvin, et al. "Robust dimethyl-based multiplex-DIA workflow doubles single-cell proteome depth via a reference channel." bioRxiv (2022).
 
 ---
 ## How to contribute
