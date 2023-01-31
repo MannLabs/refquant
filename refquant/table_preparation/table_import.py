@@ -108,7 +108,38 @@ class TableReformatterDIANNCh8Ref(TableReformatterDIANN):
     def _define_diann_table_reformatted(self):
         self.diann_table_reformatted = AQTableReformatterDIANNCh8Ref(self._aq_reformatted_df).reformatted_df
 
+
+class TableReformatterPRMSkyline(TableReformatter):
+    def __init__(self, input_file : str, quantitative_extraction_types : list = ["prm_fragions_isotopes"]):
+        self._input_file = input_file
+        self._quantitative_extraction_types = quantitative_extraction_types
+        
+        self._tmpdir_refquant = None
+        self._per_channel_subfiles = None
+        self._aq_reformatted_df = None
+
+
+        self.diann_table_reformatted = None
+        self.filename_reformatted = None
+
+        self._define_merged_aq_reformatted_df()
+        self._define_diann_table_reformatted()
+        self._save_reformatted_table_and_define_outfile_name()
+
+    def _define_merged_aq_reformatted_df(self):
+        reformatted_dfs = []
+        for quantitative_extraction_type in self._quantitative_extraction_types:
+            aq_reformatted_df = table_utils.import_data(self._input_file, input_type_to_use=quantitative_extraction_type)
+            reformatted_dfs.append(aq_reformatted_df)
+        self._aq_reformatted_df = pd.concat(reformatted_dfs, ignore_index=True)
+
+    def _define_diann_table_reformatted(self):
+        self.diann_table_reformatted = AQTableReformatterPRM(self._aq_reformatted_df).reformatted_df
     
+    def _save_reformatted_table_and_define_outfile_name(self):
+        self.filename_reformatted = f"{self._input_file}.reformatted_for_refquant.tsv"
+        self.diann_table_reformatted.to_csv(self.filename_reformatted, sep="\t", index=False)
+
 
 
 class SpectronautPerChannelSubfileWriter():
@@ -156,7 +187,6 @@ class SpectronautPerChannelSubfileWriter():
                 return os.path.join(folder_containing_table, file)
 
 
-from functools import reduce
 class TableReformatterAndMerger():
     def __init__(self, per_channel_subfiles :list, quantitative_extraction_types : list):
         self._per_channel_subfiles : list = per_channel_subfiles
@@ -369,6 +399,31 @@ class AQTableReformatterDIANNCh8Ref(AQTableReformatterDIANN):
     channel_names = [ "target0", "target4", "reference"]
     channel2name = dict(zip(channels, channel_names))
 
+class AQTableReformatterPRM(AQTableReformatter):
+    ordered_headers =  ["run", "protein", "precursor","ion", "target", "reference"]
+    channels = [".raw_light", ".raw_heavy"]
+    channel_names = [ "_target", "_reference"]
+    channel2name = dict(zip(channels, channel_names))
+
+    def __init__(self, aq_format_df : pd.DataFrame):
+        self._aq_format_df : pd.DataFrame = aq_format_df
+
+        self.reformatted_df : pd.DataFrame = None
+
+        self._remove_decoy_columns_if_present()
+        super()._filter_and_annotate_aq_format_df()
+        super()._define_reformatted_df()
+    
+    def _remove_decoy_columns_if_present(self):
+        decoy_columns = [x for x in self._aq_format_df.columns if x.endswith("_NA")]
+        self._aq_format_df = self._aq_format_df.drop(columns=decoy_columns)
+
+    def _drop_ions_w_no_data_in_target_channels(self):
+        target_channels = [x for x in self.ordered_headers if "target" in x]
+        if len(target_channels) >1:
+            raise ValueError("More than 1 target channel")
+        at_least_one_not_na = self.reformatted_df[target_channels[0]].replace(0, np.nan).notna().values
+        self.reformatted_df = self.reformatted_df[at_least_one_not_na]
 
 class DIANNfragionIDAdder():
     def __init__(self, diann_original_input_file, aq_reformatted_df):

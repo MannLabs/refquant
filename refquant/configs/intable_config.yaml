@@ -943,3 +943,38 @@ diann_fragion_isotopes_gene_level:
          - Precursor.Charge
   use_iontree: True
   ml_level: CHARGE
+
+
+
+prm_fragions_isotopes:
+  format: longtable
+  sample_ID: File Name With Label
+  quant_ID:
+    fragion: Area
+    ms1iso: Area
+  protein_cols:
+   - Protein Name
+  ion_hierarchy:
+    fragion:
+      order: [SEQ, MOD, CHARGE, FRGION]
+      mapping:
+        SEQ: 
+         - Peptide Sequence
+        MOD: 
+         - Peptide Modified Sequence
+        CHARGE: 
+         - Precursor Charge
+        FRGION: 
+         - Fragment Ion
+
+    ms1iso:
+      order: [SEQ, MOD, CHARGE, MS1ISOTOPES]
+      mapping:
+        SEQ: 
+         - Peptide Sequence
+        MOD: 
+         - Peptide Modified Sequence
+        CHARGE: 
+         - Precursor Charge
+        MS1ISOTOPES:
+         - Fragment Ion

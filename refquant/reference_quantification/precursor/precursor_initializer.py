@@ -25,6 +25,9 @@ class PrecursorsFromDataframeInititalizerSpikeInRuns(PrecursorsFromDataframeInit
 class PrecursorsFromDataframeInititalizerReference8(PrecursorsFromDataframeInititalizer):
     channel_names = ["target0", "target4", "reference"]
 
+class PrecursorsFromDataframeInitializerPRM(PrecursorsFromDataframeInititalizer):
+    channel_names = ["target", "reference"]
+
 class SingleLabelledPrecursorIntitializer():
     def __init__(self, precursor_name, precursor_df, channel_name):
         self._precursor_name = precursor_name

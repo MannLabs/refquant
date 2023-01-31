@@ -86,9 +86,29 @@ class PrecursorLoaderDIANNRef8(PrecursorLoader):
     def _get_list_of_single_labelled_precursors(self, precursor, precursor_df):
         return precursor_initializer.PrecursorsFromDataframeInititalizerReference8(precursor, precursor_df).single_labelled_precursors
 
+class PrecursorLoaderPRM(PrecursorLoader):
+    def __init__(self, formatted_input_file, replicate_name):
+        super().__init__(formatted_input_file, replicate_name)
+    
+    def _get_list_of_single_labelled_precursors(self, precursor, precursor_df):
+        return precursor_initializer.PrecursorsFromDataframeInitializerPRM(precursor, precursor_df).single_labelled_precursors
 
 
 class PrecursorLoaderDIANNFromDf(PrecursorLoaderDIANN):
+    def __init__(self, merged_precusor_and_fragion_df):
+
+        self._merged_precusor_and_fragion_df = merged_precusor_and_fragion_df
+
+        self._precursor2df = {}
+        
+        self.precursors_w_all_labels = []
+        self._adapt_formatting_of_dataframe()
+        self._define_precursor2df()
+        self._go_through_precursors_and_initialize_precursors_w_all_labels()
+    
+
+
+class PrecursorLoaderPRMFromDf(PrecursorLoaderPRM):
     def __init__(self, merged_precusor_and_fragion_df):
 
         self._merged_precusor_and_fragion_df = merged_precusor_and_fragion_df

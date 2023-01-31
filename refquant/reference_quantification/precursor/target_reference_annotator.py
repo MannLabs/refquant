@@ -9,6 +9,10 @@ class PrecursorWMatchedLabelsAnnotator():
     def annotate_precursor(self):
         for target_precursor in self._list_of_target_precursors:
             TargetReferenceAnnotator(self._reference_precursor, target_precursor)
+        
+    def annotate_precursor_prm(self):
+        for target_precursor in self._list_of_target_precursors:
+            TargetReferenceAnnotatorPRM(self._reference_precursor, target_precursor)
 
 
 class TargetReferenceAnnotator():
@@ -111,3 +115,26 @@ class TargetReferenceAnnotator():
         self.target_precursor.number_of_fragment_ions_used = len(set(filter(lambda x : "FRGION" in x, self._list_of_intersection_ions)))
 
 
+class TargetReferenceAnnotatorPRM(TargetReferenceAnnotator):
+    def __init__(self,reference_precursor,target_precursor):
+
+        self.reference_precursor = reference_precursor
+        self.target_precursor = target_precursor
+
+        self._intensities_target = None
+        self._intensities_reference = None
+        self._list_of_intersection_ions = None
+        self._ratios_to_reference = None
+
+        self._define_intersecting_fragment_ions()
+        self._define_intensities_of_target_and_reference()
+        self._define_ratios_to_reference()
+        self._annotate_number_of_ratios_used_to_precursor()
+        self._annotate_derived_ratio()
+        self._annotate_search_engine_derived_reference_quantity()
+        self._annotate_ms1_reference_quantity()
+        self._annotate_summed_top5_reference_quantity()
+        self._annotate_intensity_based_reference_ratio()
+        self._annotate_comparison_derived_quantity_to_precursor()
+        self._annotate_ratio_of_most_abundant_fragion_to_reference()
+        self._annotate_number_of_fragment_ions_available()

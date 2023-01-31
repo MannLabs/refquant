@@ -24,7 +24,6 @@ class PrecursorCombinerToSingleReference(PrecursorCombiner):
         matched_precursor = self._define_precursor_w_matched_labels_using_target_and_reference(precursor_w_all_labels)
         self.list_of_precursors_with_matched_labels.append(matched_precursor)
 
-
     def _define_precursor_w_matched_labels_using_target_and_reference(self, precursor_w_all_labels):
         list_of_target_precursors = list(filter(lambda x : "target" in x.channel_name , precursor_w_all_labels.list_of_single_labelled_precursors))
         reference_precursor = list(filter(lambda x : "reference" in x.channel_name , precursor_w_all_labels.list_of_single_labelled_precursors))[0]
@@ -45,5 +44,13 @@ class PrecursorCombinerPairWiseToReference(PrecursorCombiner):
         reference_precursor = list(filter(lambda x : x.channel_name == reference_column, precursor_w_all_labels.list_of_single_labelled_precursors))[0]
         precursor_with_matched_labels = precursor_classes.PrecursorWithMatchedLabels(reference_precursor=reference_precursor, list_of_target_precursors=[target_precursor])
         target_reference_annotator.PrecursorWMatchedLabelsAnnotator(precursor_with_matched_labels).annotate_precursor()
+        return precursor_with_matched_labels
+
+class PrecursorCombinerToPRMReference(PrecursorCombinerToSingleReference):
+    def _define_precursor_w_matched_labels_using_target_and_reference(self, precursor_w_all_labels):
+        list_of_target_precursors = list(filter(lambda x : "target" in x.channel_name , precursor_w_all_labels.list_of_single_labelled_precursors))
+        reference_precursor = list(filter(lambda x : "reference" in x.channel_name , precursor_w_all_labels.list_of_single_labelled_precursors))[0]
+        precursor_with_matched_labels = precursor_classes.PrecursorWithMatchedLabels(reference_precursor=reference_precursor, list_of_target_precursors=list_of_target_precursors)
+        target_reference_annotator.PrecursorWMatchedLabelsAnnotator(precursor_with_matched_labels).annotate_precursor_prm()
         return precursor_with_matched_labels
 
