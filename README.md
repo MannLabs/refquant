@@ -72,7 +72,7 @@ By default this installs loose dependancies (no explicit versioning), although i
 
 RefQuant can be imported as a Python package into any Python script or notebook with the command `import refquant`.
 
-A brief [Jupyter notebook tutorial](nbs/tutorial.ipynb) on how to use the API is also present in the [nbs folder](nbs).
+A brief [Jupyter notebook tutorial](tutorial/tutorial.ipynb) on how to use the API is also present in the [nbs folder](nbs).
 
 ---
 ## Troubleshooting
