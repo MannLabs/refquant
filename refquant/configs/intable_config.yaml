@@ -224,6 +224,30 @@ diann_precursors_mDIA:
    - Channel.8
   sample_ID: Run
   quant_ID:
+    precursor: Precursor.Quantity
+  protein_cols:
+   - Protein.Group
+  ion_hierarchy:
+    precursor:
+      order: [SEQ, MOD, CHARGE]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+  use_iontree: True
+  ml_level: CHARGE
+
+diann_precursors_translated_mDIA:
+  format: longtable
+  channel_ID: 
+   - Channel.0
+   - Channel.4
+   - Channel.8
+  sample_ID: Run
+  quant_ID:
     precursor: Precursor.Translated
   protein_cols:
    - Protein.Group
@@ -239,6 +263,132 @@ diann_precursors_mDIA:
          - Precursor.Charge
   use_iontree: True
   ml_level: CHARGE
+
+
+diann_precursors_normalised_mDIA:
+  format: longtable
+  channel_ID: 
+   - Channel.0
+   - Channel.4
+   - Channel.8
+  sample_ID: Run
+  quant_ID:
+    precursor: Precursor.Normalised
+  protein_cols:
+   - Protein.Group
+  ion_hierarchy:
+    precursor:
+      order: [SEQ, MOD, CHARGE]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+  use_iontree: True
+  ml_level: CHARGE
+
+diann_precursors_and_ms1_mDIA:
+  format: longtable
+  channel_ID: 
+   - Channel.0
+   - Channel.4
+   - Channel.8
+  sample_ID: Run
+  quant_ID:
+    precursor: Precursor.Quantity
+    ms1iso: Ms1.Area
+  protein_cols:
+   - Protein.Group
+  ion_hierarchy:
+    precursor:
+      order: [SEQ, MOD, CHARGE]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+    ms1iso:
+      order: [SEQ, MOD, CHARGE, MS1]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+        MS1:
+          - Stripped.Sequence
+  use_iontree: True
+  ml_level: CHARGE
+
+
+diann_ms1_mDIA:
+  format: longtable
+  channel_ID: 
+   - Channel.0
+   - Channel.4
+   - Channel.8
+  sample_ID: Run
+  quant_ID:
+    ms1iso: Ms1.Area
+  protein_cols:
+   - Protein.Group
+  ion_hierarchy:
+    ms1iso:
+      order: [SEQ, MOD, CHARGE, MS1]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+        MS1:
+          - Stripped.Sequence
+
+
+
+diann_precursors_and_ms1_normalised_mDIA:
+  format: longtable
+  channel_ID: 
+   - Channel.0
+   - Channel.4
+   - Channel.8
+  sample_ID: Run
+  quant_ID:
+    precursor: Precursor.Normalised
+    ms1iso: Ms1.Area
+  protein_cols:
+   - Protein.Group
+  ion_hierarchy:
+    precursor:
+      order: [SEQ, MOD, CHARGE]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+    ms1iso:
+      order: [SEQ, MOD, CHARGE, MS1]
+      mapping:
+        SEQ: 
+         - Stripped.Sequence
+        MOD: 
+         - Modified.Sequence
+        CHARGE: 
+         - Precursor.Charge
+        MS1:
+          - Stripped.Sequence
+  use_iontree: True
+  ml_level: CHARGE
+
+
 
 diann_fragion_isotopes:
   format: longtable
@@ -967,14 +1117,14 @@ prm_fragions_isotopes:
         FRGION: 
          - Fragment Ion
 
-    ms1iso:
-      order: [SEQ, MOD, CHARGE, MS1ISOTOPES]
-      mapping:
-        SEQ: 
-         - Peptide Sequence
-        MOD: 
-         - Peptide Modified Sequence
-        CHARGE: 
-         - Precursor Charge
-        MS1ISOTOPES:
-         - Fragment Ion
+    # ms1iso:
+    #   order: [SEQ, MOD, CHARGE, MS1ISOTOPES]
+    #   mapping:
+    #     SEQ: 
+    #      - Peptide Sequence
+    #     MOD: 
+    #      - Peptide Modified Sequence
+    #     CHARGE: 
+    #      - Precursor Charge
+    #     MS1ISOTOPES:
+    #      - Fragment Ion

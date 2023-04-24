@@ -138,3 +138,20 @@ class TargetReferenceAnnotatorPRM(TargetReferenceAnnotator):
         self._annotate_comparison_derived_quantity_to_precursor()
         self._annotate_ratio_of_most_abundant_fragion_to_reference()
         self._annotate_number_of_fragment_ions_available()
+        self.__annotate_ions_used_for_quant()
+    
+    def __annotate_ions_used_for_quant(self):
+        self.target_precursor.ions_used_for_quant = self._list_of_intersection_ions
+        self.target_precursor.median_ratio_to_reference = np.median(self._ratios_to_reference)
+        #create a list of tuples with the ratio and the ion
+        shortened_ion_names = [x.replace(self.target_precursor.name, "") for x in self._list_of_intersection_ions]
+
+        ratios_coupled_to_ions = [(x,y) for x,y in  zip(self._ratios_to_reference,shortened_ion_names)]
+        ratios_coupled_to_ions.sort(key=lambda x : x[0])
+
+        idx_quantile = self._get_index_of_quantile(0.4)
+        ratios_coupled_to_ions_shortened = ratios_coupled_to_ions[:idx_quantile]
+        self.target_precursor.ions_used_for_quant = [x[1] for x in ratios_coupled_to_ions_shortened]
+        idx_of_median_of_shortened_ions = int(len(ratios_coupled_to_ions_shortened)/2)
+        ratios_coupled_to_ions_close_to_median = ratios_coupled_to_ions[idx_of_median_of_shortened_ions-1:idx_of_median_of_shortened_ions+1]
+        self.target_precursor.ions_used_for_quant_close_to_median = [x[1] for x in ratios_coupled_to_ions_close_to_median]
