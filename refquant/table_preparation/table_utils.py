@@ -510,7 +510,7 @@ def remove_mtraq_modifications_from_ion_ids(ions):
 
 
 def is_mDIA_table(config_dict_for_type):
-    return config_dict_for_type.get('channel_ID') == ['Channel.0', 'Channel.4', 'Channel.8']
+    return config_dict_for_type.get('channel_ID') == ['Channel.0', 'Channel.4']
 
 
 import re
