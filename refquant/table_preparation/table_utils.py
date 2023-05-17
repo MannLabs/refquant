@@ -501,11 +501,8 @@ def set_mtraq_reduced_ion_column_into_dataframe(input_df):
 
 def remove_mtraq_modifications_from_ion_ids(ions):
     new_ions = []
-    all_mtraq_tags = ["(Dimethyl-K-0)", "(Dimethyl-K-4)", "(Dimethyl-K-8)", "(Dimethyl-n-0)", "(Dimethyl-n-4)", "(Dimethyl-n-8)"]
     for ion in ions:
-        for tag in all_mtraq_tags:
-            ion = ion.replace(tag, "")
-        new_ions.append(ion)
+        new_ions.append( re.sub("\(Dimethyl-\w-\d\)","", ion))
     return new_ions
 
 
