@@ -181,8 +181,8 @@ def get_channel_ids_from_config_dict(config_typedict):
 
 
 def load_config(config_yaml):
-    stream = open(config_yaml, 'r')
-    config_all = yaml.safe_load(stream)
+    with open(config_yaml, 'r') as stream:
+        config_all = yaml.safe_load(stream)
     return config_all
 
 def get_type2relevant_cols(config_all):
