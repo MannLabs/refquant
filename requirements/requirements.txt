@@ -5,3 +5,4 @@ dask==2022.10.0
 matplotlib==3.6.0
 scipy==1.9.2
 multiprocess==0.70.14
+directlfq==0.2.11
