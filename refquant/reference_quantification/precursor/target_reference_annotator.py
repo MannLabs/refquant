@@ -91,7 +91,10 @@ class TargetReferenceAnnotator():
 
     def _annotate_summed_top5_reference_quantity(self):
         sorted_intensities_descending = np.sort(self._intensities_reference)[::-1]
-        self.target_precursor.summed_quantity_reference = np.log2(np.sum(2**sorted_intensities_descending[:5]))
+        if len(sorted_intensities_descending) ==0:
+            self.target_precursor.summed_quantity_reference = np.inf
+        else:
+            self.target_precursor.summed_quantity_reference = np.log2(np.sum(2**sorted_intensities_descending[:5]))
 
     def _annotate_intensity_based_reference_ratio(self):
         if self.target_precursor.search_engine_derived_quantity is not None and self.reference_precursor.search_engine_derived_quantity is not None:
