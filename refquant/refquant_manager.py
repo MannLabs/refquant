@@ -8,4 +8,5 @@ def run_refquant(diann_file_qvalfiltered, use_multiprocessing=True):
     reference_quantified_precursors = loading_manager.get_all_single_labelled_precursors_in_dataset_diann(reference_table = refquant_reformatted_table, use_multiprocessing=use_multiprocessing)
     
     writeout_manager.write_out_precursortable_in_multiple_variations(diann_file_qvalfiltered, reference_quantified_precursors)
+    writeout_manager.write_out_protein_tables()
 
